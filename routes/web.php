@@ -13,6 +13,7 @@ use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\DeviceGroupController;
 use App\Http\Controllers\GraphController;
 use App\Http\Controllers\Install;
+use App\Http\Controllers\LegacyAlertLogController;
 use App\Http\Controllers\LegacyController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\Maps;
@@ -28,6 +29,7 @@ use App\Http\Controllers\PluginLegacyController;
 use App\Http\Controllers\PluginPageController;
 use App\Http\Controllers\PluginSettingsController;
 use App\Http\Controllers\PollerController;
+use Illuminate\Http\Request;
 use App\Http\Controllers\PollerGroupController;
 use App\Http\Controllers\PollerSettingsController;
 use App\Http\Controllers\PortController;
@@ -80,6 +82,8 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('device-groups', DeviceGroupController::class);
     Route::any('inventory', App\Http\Controllers\InventoryController::class)->name('inventory');
     Route::get('inventory/purge', [App\Http\Controllers\InventoryController::class, 'purge'])->name('inventory.purge');
+    Route::any('alert-log-legacy', [LegacyAlertLogController::class, 'index'])->name('alert-log.legacy');
+    Route::any('alert-log', App\Http\Controllers\AlertLogController::class)->name('alert-log');
     Route::resource('port', PortController::class)->only('update');
     Route::get('vlans', [App\Http\Controllers\VlansController::class, 'index'])->name('vlans.index');
     Route::prefix('poller')->group(function () {
@@ -226,6 +230,7 @@ Route::middleware(['auth'])->group(function () {
 
         // js select2 data controllers
         Route::prefix('select')->group(function () {
+            Route::get('alert-rules', Select\AlertRuleController::class)->name('ajax.select.alert-rules');
             Route::get('application', Select\ApplicationController::class)->name('ajax.select.application');
             Route::get('bill', Select\BillController::class)->name('ajax.select.bill');
             Route::get('custom-map', Select\CustomMapController::class)->name('ajax.select.custom-map');
@@ -254,6 +259,7 @@ Route::middleware(['auth'])->group(function () {
         // jquery bootgrid data controllers
         Route::prefix('table')->group(function () {
             Route::post('alert-schedule', Table\AlertScheduleController::class);
+            Route::post('alertlog', Table\AlertLogController::class)->name('table.alertlog');
             Route::post('customers', Table\CustomersController::class);
             Route::post('diskio', Table\DiskioController::class)->name('table.diskio');
             Route::post('device', Table\DeviceController::class)->name('table.device');
